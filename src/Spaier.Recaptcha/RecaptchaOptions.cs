@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Spaier.Recaptcha
+﻿namespace Spaier.Recaptcha
 {
     /// <summary>
     /// Configuration for reCAPTCHA.
