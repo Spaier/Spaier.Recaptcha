@@ -8,11 +8,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.0</Version>
     <Copyright>Pavel Levchuk</Copyright>
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
-    <FileVersion>0.0.1.0</FileVersion>
     <LangVersion>latest</LangVersion>
     <NoWarn>1701;1702;1705;1591</NoWarn>
-    <Description>Simple library for using reCAPTCHA in ASP.NET Core 2 Restful API. Support Android, V2 and Invisible recaptcha at the same time.</Description>
+    <Description>Simple library for using reCAPTCHA in ASP.NET Core 2 Restful API. Supports Android, V2 and Invisible recaptcha at the same time.</Description>
     <PackageProjectUrl>https://github.com/Spaier/Spaier.Recaptcha</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/Spaier/Spaier.Recaptcha/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/Spaier/Spaier.Recaptcha</RepositoryUrl>
