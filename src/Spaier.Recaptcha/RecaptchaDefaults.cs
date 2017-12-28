@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Spaier.Recaptcha
+﻿namespace Spaier.Recaptcha
 {
     /// <summary>
     /// Default constants.
@@ -10,7 +6,7 @@ namespace Spaier.Recaptcha
     public static class RecaptchaDefaults
     {
         /// <summary>
-        /// Default URL for verifying reCAPTCHA. 
+        /// Default URL for verifying reCAPTCHA.
         /// </summary>
         public const string VerifyUrl = "https://www.google.com/recaptcha/api/siteverify";
 
