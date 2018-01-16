@@ -1,4 +1,4 @@
 language: csharp
 mono: none
-dotnet: 2.0.5
+dotnet: 2.1.4
 solution: Spaier.Recaptcha.sln
