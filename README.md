@@ -1,4 +1,4 @@
-# spaier-ng-recaptcha
+# Spaier.Recaptcha
 [![Build Status](https://travis-ci.org/Spaier/Spaier.Recaptcha.svg?branch=master)](https://travis-ci.org/Spaier/Spaier.Recaptcha)
 [![Nuget](https://img.shields.io/nuget/v/Spaier.Recaptcha.svg)](https://www.nuget.org/packages/Spaier.Recaptcha)
 ## Prerequisites
