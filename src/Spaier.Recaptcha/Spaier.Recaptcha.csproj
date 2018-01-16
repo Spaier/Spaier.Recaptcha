@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Pavel Levchuk</Authors>
-    <Company />
+    <Company>Spaier</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Copyright>Pavel Levchuk</Copyright>
     <LangVersion>latest</LangVersion>
     <NoWarn>1701;1702;1705;1591</NoWarn>
@@ -14,6 +14,7 @@
     <PackageProjectUrl>https://github.com/Spaier/Spaier.Recaptcha</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/Spaier/Spaier.Recaptcha/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/Spaier/Spaier.Recaptcha</RepositoryUrl>
+    <PackageTags>aspnetcore, aspnetmvc, recaptcha</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -25,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
   </ItemGroup>
 
