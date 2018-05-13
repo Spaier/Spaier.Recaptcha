@@ -30,7 +30,7 @@ namespace Spaier.Recaptcha
             if (!string.IsNullOrWhiteSpace(token = context.HttpContext.Request.Headers[recaptchaService.RecaptchaHeaderKey]))
             {
                 var remoteIp = context.HttpContext.Connection.RemoteIpAddress.ToString();
-                var result = await recaptchaService.ValidateRecaptcha(token, remoteIp);
+                var result = await recaptchaService.ValidateRecaptcha(token, remoteIp).ConfigureAwait(false);
                 if (!result)
                 {
                     context.ModelState.AddModelError("wrong-recaptcha", "Recaptcha check failed");
@@ -40,7 +40,7 @@ namespace Spaier.Recaptcha
             {
                 context.ModelState.AddModelError("no-recaptcha", "Recaptcha is missing");
             }
-            await base.OnActionExecutionAsync(context, next);
+            await base.OnActionExecutionAsync(context, next).ConfigureAwait(false);
         }
     }
 }

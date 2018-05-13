@@ -52,7 +52,7 @@ namespace Spaier.Recaptcha
                     using (var httpClient = new HttpClient())
                     {
                         var googleResponse = await httpClient.PostAsync(_recaptchaOptions.VerifyUrl, content);
-                        var json = await googleResponse.Content.ReadAsStringAsync();
+                        var json = await googleResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                         return JsonConvert.DeserializeObject<RecaptchaResponse>(json);
                     }
                 }
@@ -60,9 +60,9 @@ namespace Spaier.Recaptcha
             }
             var responses = new[]
             {
-                await SendRequest(_recaptchaOptions.V2Secret),
-                await SendRequest(_recaptchaOptions.InvisibleSecret),
-                await SendRequest(_recaptchaOptions.AndroidSecret)
+                await SendRequest(_recaptchaOptions.V2Secret).ConfigureAwait(false),
+                await SendRequest(_recaptchaOptions.InvisibleSecret).ConfigureAwait(false),
+                await SendRequest(_recaptchaOptions.AndroidSecret).ConfigureAwait(false)
             };
             return responses.Any(w => w?.IsSuccess == true);
         }
