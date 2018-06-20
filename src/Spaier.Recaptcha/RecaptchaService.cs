@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using static Spaier.Recaptcha.RecaptchaResponses;
 
 namespace Spaier.Recaptcha
 {
@@ -13,24 +14,33 @@ namespace Spaier.Recaptcha
     public class RecaptchaService
     {
         private readonly RecaptchaOptions _recaptchaOptions;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Current header key.
         /// </summary>
         public string RecaptchaHeaderKey => _recaptchaOptions?.RecaptchaHeaderKey;
 
-        public RecaptchaService(IOptions<RecaptchaOptions> options)
+        public RecaptchaService(IOptions<RecaptchaOptions> options, HttpClient httpClient)
         {
             _recaptchaOptions = options.Value;
+            _httpClient = _httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
         /// <summary>
-        /// Validate recaptcha <paramref name="clientResponse"/> using configured <see cref="RecaptchaOptions.VerifyUrl"/>.
+        /// Validate reCAPTCHA's <paramref name="clientResponse"/> using <see cref="RecaptchaOptions.VerifyUrl"/>.
         /// </summary>
         /// <param name="clientResponse"></param>
         /// <param name="remoteIp"></param>
-        /// <returns>Task returning bool whether recaptcha is valid or not.</returns>
-        public async Task<bool> ValidateRecaptcha(string clientResponse, string remoteIp)
+        /// <param name="verifiesV2"></param>
+        /// <param name="verifiesV2Invisible"></param>
+        /// <param name="verifiesV2Android"></param>
+        /// <param name="verifiesV3"></param>
+        /// <exception cref="RecaptchaNoSecretException"></exception>
+        /// <returns></returns>
+        public async Task<(bool IsSuccess, IEnumerable<RecaptchaResponseBase> Responses)> ValidateRecaptcha
+            (string clientResponse, string remoteIp, VerificationState verifiesV2,
+            VerificationState verifiesV2Invisible, VerificationState verifiesV2Android, VerificationState verifiesV3)
         {
             const string secretKey = "secret";
             const string responseKey = "response";
@@ -43,28 +53,81 @@ namespace Spaier.Recaptcha
                 [remoteIpKey] = remoteIp
             };
 
-            async Task<RecaptchaResponse?> SendRequest(string secret)
+            async Task<TResponse> Check<TResponse>(string secret)
+                where TResponse : class
             {
-                if (!string.IsNullOrWhiteSpace(secret))
+                parameters[secretKey] = secret;
+                var content = new FormUrlEncodedContent(parameters);
+
+                var googleResponse = await _httpClient
+                    .PostAsync(_recaptchaOptions.VerifyUrl, content)
+                    .ConfigureAwait(false);
+
+                googleResponse.EnsureSuccessStatusCode();
+
+                return await googleResponse.Content
+                    .ReadAsAsync<TResponse>()
+                    .ConfigureAwait(false);
+            }
+
+            List<Task> tasks = new List<Task>();
+
+            void AddCheckTask<TResponse>(VerificationState currentVerification, VerificationState defaultVerification, string secret)
+                where TResponse : class
+            {
+                var isNoSecret = string.IsNullOrWhiteSpace(secret);
+                void SwitchOnState(bool isEnabled = true)
                 {
-                    parameters[secretKey] = secret;
-                    var content = new FormUrlEncodedContent(parameters);
-                    using (var httpClient = new HttpClient())
+                    if (isEnabled && isNoSecret)
                     {
-                        var googleResponse = await httpClient.PostAsync(_recaptchaOptions.VerifyUrl, content);
-                        var json = await googleResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        return JsonConvert.DeserializeObject<RecaptchaResponse>(json);
+                        throw new RecaptchaNoSecretException();
+                    }
+                    else if (!isNoSecret)
+                    {
+                        tasks.Add(Check<TResponse>(secret));
                     }
                 }
-                return null;
+                switch (currentVerification)
+                {
+                    case VerificationState.Enabled:
+                        SwitchOnState();
+                        break;
+                    case VerificationState.Default:
+                        switch (defaultVerification)
+                        {
+                            case VerificationState.Enabled:
+                                SwitchOnState();
+                                break;
+                            case VerificationState.Default:
+                                SwitchOnState(false);
+                                break;
+                        }
+                        break;
+                }
             }
-            var responses = new[]
+
+            AddCheckTask<RecaptchaV2Response>(verifiesV2, _recaptchaOptions.V2Verification, _recaptchaOptions.V2Secret);
+            AddCheckTask<RecaptchaV2AndroidResponse>(verifiesV2Android, _recaptchaOptions.AndroidVerification, _recaptchaOptions.AndroidSecret);
+            AddCheckTask<RecaptchaV2Response>(verifiesV2Invisible, _recaptchaOptions.InvisibleVerification, _recaptchaOptions.InvisibleSecret);
+            AddCheckTask<RecaptchaV3Response>(verifiesV3, _recaptchaOptions.V3Verification, _recaptchaOptions.V3Secret);
+
+            if (tasks.Count == 0) throw new RecaptchaVerificationException();
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+            List<RecaptchaResponseBase> responses = new List<RecaptchaResponseBase>();
+            foreach (Task<RecaptchaResponseBase> task in tasks)
             {
-                await SendRequest(_recaptchaOptions.V2Secret).ConfigureAwait(false),
-                await SendRequest(_recaptchaOptions.InvisibleSecret).ConfigureAwait(false),
-                await SendRequest(_recaptchaOptions.AndroidSecret).ConfigureAwait(false)
-            };
-            return responses.Any(w => w?.IsSuccess == true);
+                if (task.Result.IsSuccess)
+                {
+                    return (true, new[] { task.Result });
+                }
+                else
+                {
+                    responses.Add(task.Result);
+                }
+            }
+
+            return (false, responses);
         }
     }
 }
