@@ -10,30 +10,28 @@
         /// </summary>
         public string AndroidSecret { get; set; }
 
-        /// <summary>
-        /// Android application secret of Android reCAPTCHA.
-        /// </summary>
-        public string AndroidKey { get; set; }
+        public VerificationState AndroidVerification { get; set; }
 
         /// <summary>
         /// Backend secret of Invisible reCAPTCHA.
         /// </summary>
         public string InvisibleSecret { get; set; }
 
-        /// <summary>
-        /// Frontend key of Invisible reCAPTCHA.
-        /// </summary>
-        public string InvisibleKey { get; set; }
+        public VerificationState InvisibleVerification { get; set; }
 
         /// <summary>
         /// Backend secret of V2 reCAPTCHA.
         /// </summary>
         public string V2Secret { get; set; }
 
+        public VerificationState V2Verification { get; set; }
+
         /// <summary>
-        /// Frontend key of V2 reCAPTCHA.
+        /// Backend secret of V3 reCAPTCHA.
         /// </summary>
-        public string V2Key { get; set; }
+        public string V3Secret { get; set; }
+
+        public VerificationState V3Verification { get; set; }
 
         /// <summary>
         /// URL for verifying reCAPTCHA.
