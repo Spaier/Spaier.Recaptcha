@@ -11,11 +11,6 @@
         public const string VerifyUrl = "https://www.google.com/recaptcha/api/siteverify";
 
         /// <summary>
-        /// Default URL for reCAPTCHA.js
-        /// </summary>
-        public const string JavaScriptUrl = "https://www.google.com/recaptcha/api.js";
-
-        /// <summary>
         /// Default HTTP header key for reCAPTCHA response.
         /// </summary>
         public const string RecaptchaHeaderKey = "g-recaptcha-response";
