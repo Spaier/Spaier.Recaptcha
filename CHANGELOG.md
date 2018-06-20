@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 - Use Typed client `HttpClient`. [Docs](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-2.1#typed-clients).
 - Rewrite requests to google api with `Task.WaitAll`.
+- Add model errors from responses when reCAPTCHA is invalid.
 
 ### Removed
 
