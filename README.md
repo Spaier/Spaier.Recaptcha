@@ -115,7 +115,7 @@ If no token is passed `NoRecaptchaResponseError = "no-recaptcha-response"` error
             // Your Code
         }
 ```
- 
+
 reCAPTCHA's response should be passed in HTTP header with specified key or `g-recaptcha-response`.
 
 ## License
