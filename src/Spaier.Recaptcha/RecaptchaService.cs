@@ -11,7 +11,7 @@ namespace Spaier.Recaptcha
     /// <summary>
     /// Service for validating reCAPTCHA.
     /// </summary>
-    public class RecaptchaService
+    public class RecaptchaService : IDisposable
     {
         private readonly RecaptchaOptions _recaptchaOptions;
         private readonly HttpClient _httpClient;
@@ -128,6 +128,11 @@ namespace Spaier.Recaptcha
             }
 
             return (false, responses);
+        }
+
+        public void Dispose()
+        {
+            _httpClient?.Dispose();
         }
     }
 }
