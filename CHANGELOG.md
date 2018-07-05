@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned
+### Fixed
 
-- Custom actions based on reCAPTCHA response.
+- `RecaptchaService` implements `IDisposable`
+- `RecaptchaService` injected with `AddHttpClient` instead of `AddTransient`
 
 ## [1.1.0-rc0] - 20-06-2018
 
