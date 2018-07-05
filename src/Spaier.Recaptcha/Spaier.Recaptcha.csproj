@@ -6,7 +6,7 @@
     <Company>Spaier</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0-rc0</Version>
+    <Version>1.1.0-rc1</Version>
     <Copyright>Pavel Levchuk</Copyright>
     <LangVersion>latest</LangVersion>
     <NoWarn>1701;1702;1705;1591</NoWarn>
