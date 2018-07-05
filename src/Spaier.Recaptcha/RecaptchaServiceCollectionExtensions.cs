@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceCollection"></param>
         public static void AddRecaptcha(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddTransient<RecaptchaService>();
+            serviceCollection.AddHttpClient<RecaptchaService>();
         }
     }
 }
