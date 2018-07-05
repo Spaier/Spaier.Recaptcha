@@ -25,34 +25,36 @@ namespace Spaier.Recaptcha
         /// <returns></returns>
         public async override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var recaptchaService = context.HttpContext.RequestServices.GetService<RecaptchaService>();
-            string token;
-            if (!string.IsNullOrWhiteSpace(token = context.HttpContext.Request.Headers[recaptchaService.RecaptchaHeaderKey]))
+            using (var recaptchaService = context.HttpContext.RequestServices.GetService<RecaptchaService>())
             {
-                var remoteIp = context.HttpContext.Connection.RemoteIpAddress.ToString();
-                var (isSuccess, responses) = await recaptchaService.ValidateRecaptcha(token, remoteIp,
-                    VerifiesV2, VerifiesV2Invisible, VerifiesV2Android, VerifiesV3).ConfigureAwait(false);
-                if (isSuccess)
+                string token;
+                if (!string.IsNullOrWhiteSpace(token = context.HttpContext.Request.Headers[recaptchaService.RecaptchaHeaderKey]))
                 {
-                    // TODO: Custom action?s
-                    // someService(responses.First());
-                }
-                else
-                {
-                    foreach (var response in responses)
+                    var remoteIp = context.HttpContext.Connection.RemoteIpAddress.ToString();
+                    var (isSuccess, responses) = await recaptchaService.ValidateRecaptcha(token, remoteIp,
+                        VerifiesV2, VerifiesV2Invisible, VerifiesV2Android, VerifiesV3).ConfigureAwait(false);
+                    if (isSuccess)
                     {
-                        foreach (var error in response.ErrorCodes)
+                        // TODO: Custom action?s
+                        // someService(responses.First());
+                    }
+                    else
+                    {
+                        foreach (var response in responses)
                         {
-                            context.ModelState.AddModelError(error, null);
+                            foreach (var error in response.ErrorCodes)
+                            {
+                                context.ModelState.AddModelError(error, null);
+                            }
                         }
                     }
                 }
+                else
+                {
+                    context.ModelState.AddModelError(ModelErrorCodes.NoRecaptchaResponseError, "Recaptcha is missing");
+                }
+                await base.OnActionExecutionAsync(context, next).ConfigureAwait(false);
             }
-            else
-            {
-                context.ModelState.AddModelError(ModelErrorCodes.NoRecaptchaResponseError, "Recaptcha is missing");
-            }
-            await base.OnActionExecutionAsync(context, next).ConfigureAwait(false);
         }
     }
 
