@@ -7,13 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0-rc1] - 06-07-2018
-
-### Fixed
-
-- `RecaptchaService` implements `IDisposable`
-- `RecaptchaService` injected with `AddHttpClient` instead of `AddTransient`
-
 ## [1.1.0-rc0] - 20-06-2018
 
 ### Added
@@ -58,8 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - I'm not a robot, Invisible and Android reCAPTCHA support.
 
-[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.1.0-rc1...HEAD
-[1.1.0-rc1]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.1.0-rc0...1.1.0-rc1
+[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.1.0-rc0...HEAD
 [1.1.0-rc0]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.0.3...1.1.0-rc0
 [1.0.3]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.0.1...1.0.2
