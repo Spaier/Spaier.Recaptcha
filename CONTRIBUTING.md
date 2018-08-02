@@ -34,6 +34,7 @@ Commit message must start in a following format
 - **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 - **test**: Adding missing tests or correcting existing tests
 - **chore**: Other changes that don't modify src or test files
+- **release**: Add new release
 - **revert**: `reverts commit <hash>`
 
 ## Commit scopes
