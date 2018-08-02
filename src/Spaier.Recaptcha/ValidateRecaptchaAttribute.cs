@@ -1,104 +1,71 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using Spaier.Recaptcha.Http;
+using Spaier.Recaptcha.Mvc;
 
 namespace Spaier.Recaptcha
 {
-    public class ValidateRecaptchaAttribute : ActionFilterAttribute
+    public class ValidateRecaptchaAttribute : FilterFactoryAttribute, IOrderedFilter
     {
-        public VerificationState VerifiesV2 { get; set; }
+        public string[] Configurations { get; set; }
 
-        public VerificationState VerifiesV2Invisible { get; set; }
+        public int Order { get; set; }
 
-        public VerificationState VerifiesV2Android { get; set; }
-
-        public VerificationState VerifiesV3 { get; set; }
-
-        /// <summary>
-        /// Checks reCAPTCHA in header with key <see cref="RecaptchaOptions.RecaptchaHeaderKey"/>.
-        /// If no token is present adds <see cref="ModelErrorCodes.NoRecaptchaResponseError"/> model error.
-        /// If verification is unsuccessful adds model errors from <see cref="RecaptchaOptions.VerifyUrl"/> responses.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="next"></param>
-        /// <returns></returns>
-        public async override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public override IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            using (var recaptchaService = context.HttpContext.RequestServices.GetService<RecaptchaService>())
+            var service = serviceProvider.GetRequiredService<InnerAttribute>();
+            service.Configurations = Configurations;
+            service.Order = Order;
+            return service;
+        }
+
+        internal class InnerAttribute : ActionFilterAttribute
+        {
+            private readonly IRecaptchaTokenProvider tokenProvider;
+            private readonly IRecaptchaConfigurationProvider configurationProvider;
+            private readonly IRecaptchaHttpClient recaptchaHttpClient;
+            private readonly IRecaptchaSuccessHandler recaptchaSuccessHandler;
+
+            /// <summary>
+            /// Allowed configurations. If equals null any configuration can be used.
+            /// </summary>
+            public string[] Configurations { get; set; }
+
+            public InnerAttribute(IRecaptchaTokenProvider tokenProvider, IRecaptchaConfigurationProvider configurationProvider,
+                IRecaptchaHttpClient recaptchaHttpClient, IRecaptchaSuccessHandler recaptchaSuccessHandler = null)
             {
-                string token;
-                if (!string.IsNullOrWhiteSpace(token = context.HttpContext.Request.Headers[recaptchaService.RecaptchaHeaderKey]))
+                this.tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
+                this.configurationProvider = configurationProvider ?? throw new ArgumentNullException(nameof(configurationProvider));
+                this.recaptchaHttpClient = recaptchaHttpClient ?? throw new ArgumentNullException(nameof(recaptchaHttpClient));
+                this.recaptchaSuccessHandler = recaptchaSuccessHandler;
+            }
+
+            public async override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+            {
+                var configuration = configurationProvider.GetRecaptchaConfiguration(context.HttpContext.Request, out var key);
+                if (Configurations != null && Array.BinarySearch(Configurations, key) < 0)
                 {
-                    var remoteIp = context.HttpContext.Connection.RemoteIpAddress.ToString();
-                    var (isSuccess, responses) = await recaptchaService.ValidateRecaptcha(token, remoteIp,
-                        VerifiesV2, VerifiesV2Invisible, VerifiesV2Android, VerifiesV3).ConfigureAwait(false);
-                    if (isSuccess)
-                    {
-                        // TODO: Custom action?s
-                        // someService(responses.First());
-                    }
-                    else
-                    {
-                        foreach (var response in responses)
-                        {
-                            foreach (var error in response.ErrorCodes)
-                            {
-                                context.ModelState.AddModelError(error, null);
-                            }
-                        }
-                    }
+                    throw new RecaptchaConfigurationException("Specified configuration isn't allowed");
+                }
+
+                var result = await recaptchaHttpClient.VerifyRecaptchaAsync(configuration, context.HttpContext.Request, tokenProvider);
+
+                if (result.IsSuccess)
+                {
+                    recaptchaSuccessHandler?.OnSuccess(result, context);
                 }
                 else
                 {
-                    context.ModelState.AddModelError(ModelErrorCodes.NoRecaptchaResponseError, "Recaptcha is missing");
+                    foreach (var error in result.ErrorCodes)
+                    {
+                        context.ModelState.AddModelError(error, string.Empty);
+                    }
                 }
-                await base.OnActionExecutionAsync(context, next).ConfigureAwait(false);
+
+                await next();
             }
-        }
-    }
-
-    public class ValidateRecaptchaV2Attribute : ValidateRecaptchaAttribute
-    {
-        public ValidateRecaptchaV2Attribute()
-        {
-            VerifiesV2 = VerificationState.Enabled;
-            VerifiesV3 = VerificationState.Disabled;
-            VerifiesV2Android = VerificationState.Disabled;
-            VerifiesV2Invisible = VerificationState.Disabled;
-        }
-    }
-
-    public class ValidateRecaptchaV2InvisibleAttribute : ValidateRecaptchaAttribute
-    {
-        public ValidateRecaptchaV2InvisibleAttribute()
-        {
-            VerifiesV2Invisible = VerificationState.Enabled;
-            VerifiesV2Android = VerificationState.Disabled;
-            VerifiesV2 = VerificationState.Disabled;
-            VerifiesV3 = VerificationState.Disabled;
-        }
-    }
-
-    public class ValidateRecaptchaV2AndroidAttribute : ValidateRecaptchaAttribute
-    {
-        public ValidateRecaptchaV2AndroidAttribute()
-        {
-            VerifiesV2Android = VerificationState.Enabled;
-            VerifiesV2Invisible = VerificationState.Disabled;
-            VerifiesV2 = VerificationState.Disabled;
-            VerifiesV3 = VerificationState.Disabled;
-        }
-    }
-
-    public class ValidateRecaptchaV3Attribute : ValidateRecaptchaAttribute
-    {
-        public ValidateRecaptchaV3Attribute()
-        {
-            VerifiesV3 = VerificationState.Enabled;
-            VerifiesV2 = VerificationState.Disabled;
-            VerifiesV2Android = VerificationState.Disabled;
-            VerifiesV2Invisible = VerificationState.Disabled;
         }
     }
 }

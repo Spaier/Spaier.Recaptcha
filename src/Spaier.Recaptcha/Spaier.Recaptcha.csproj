@@ -5,13 +5,14 @@
     <Authors>Pavel Levchuk</Authors>
     <Company>Spaier</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0-rc1</Version>
+    <Version>2.0.0-alpha.0</Version>
     <Copyright>Pavel Levchuk</Copyright>
     <LangVersion>latest</LangVersion>
-    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <NoWarn>$(NoWarn);1591;RCS1090</NoWarn>
     <Description>
-      Library for verifying reCAPTCHA token from client-side in ASP.NET Core 2.1 Web API Controllers.
+      Library for verifying reCAPTCHA token from client-side in ASP.NET Core 2.1+ Web API Controllers.
       Supports V2(Android, I'm not a robot, Invisible) and V3 reCAPTCHA.
     </Description>
     <PackageProjectUrl>https://github.com/Spaier/Spaier.Recaptcha</PackageProjectUrl>
@@ -19,14 +20,6 @@
     <RepositoryUrl>https://github.com/Spaier/Spaier.Recaptcha</RepositoryUrl>
     <PackageTags>aspnetcore, recaptcha</PackageTags>
     <PackageReleaseNotes>See (https://github.com/Spaier/Spaier.Recaptcha/blob/master/CHANGELOG.md)</PackageReleaseNotes>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\Spaier.Recaptcha.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\Spaier.Recaptcha.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
