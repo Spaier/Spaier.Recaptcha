@@ -36,18 +36,28 @@ dotnet add package Spaier.Recaptcha
 ```cs
 public void ConfigureServices(IServiceCollection services) {
     // Your Code
-    services.AddRecaptcha(options =>
-    {
-        options.AndroidSecret = "AndroidSecretKey";
-        options.InvisibleSecret = "InvisibleSecretKey";
-        options.V2Secret = "V2SecretKey";
-        options.V3Secret = "V3SecretKey";
-        // Optionally you can set header name. Default one is "g-recaptcha-response"
-        // options.RecaptchaHeaderKey = "some-header";
-        // Optionally specify default verification strategy
-        options.V3Verification = VerificationState.Disabled;
-        options.V2Verification = VerificationState.Enabled;
-    });
+    // Option 1
+      services.AddRecaptcha()
+        .AddTokenHeaderProvider()
+        .AddConfigurationHeaderProvider(options =>
+        {
+            options.Configurations = new Dictionary<string, RecaptchaConfiguration>
+            {
+                [""] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2),
+                ["Register"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2),
+                ["Android"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2Android),
+                ["V3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V3)
+            };
+        })
+        .AddRecaptchaHttpClient()
+        .UseGoogleUrl();
+
+    // Option 2
+    services.AddRecaptcha()
+        .AddTokenHeaderProvider()
+        .AddConfigurationHeaderProvider(Configuration.GetSection("Recaptcha"))
+        .AddRecaptchaHttpClient()
+        .UseGoogleUrl();
 }
 ```
 
@@ -66,57 +76,20 @@ public void ConfigureServices(IServiceCollection services) {
 If token passed by client-side is invalid model errors will be added to `ModelState`.
 See `RecaptchaErrorCodes` and [official docs](https://developers.google.com/recaptcha/docs/verify)
 
-If no token is passed `NoRecaptchaResponseError = "no-recaptcha-response"` error will be added to `ModelState`.
-
-3. Optionally specify reCAPTCHA types to use in verification. By default if secret is provided it will be used.
+3. Optionally specify reCAPTCHA allowed configurations. By default all can be used.
 
 ```cs
         [HttpPost]
         [AllowAnonymous]
-        [ValidateV2Recaptcha]
-        public async Task<ActionResult> ProtectedByV2()
-        {
-            // Your Code
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateV2InvisibleRecaptcha]
-        public async Task<ActionResult> ProtectedByV2Invisible()
-        {
-            // Your Code
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateV2AndroidRecaptcha]
-        public async Task<ActionResult> ProtectedByV2Android()
-        {
-            // Your Code
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateV3Recaptcha]
-        public async Task<ActionResult> ProtectedByV3()
-        {
-            // Your Code
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateRecaptcha(
-            VerifiesV2 = VerificationState.Enabled,
-            VerifiesV3 = VerificationState.Enabled,
-            VerifiesV2Invisible = VerificationState.Disabled,
-            VerifiesV2Android = VerificationState.Disabled)]
-        public async Task<ActionResult> ProtectedByV2AndV3()
+        [ValidateRecaptcha(Configurations = new[] { "V3", "Register" }]
+        public async Task<ActionResult> ProtectedByV3AndRegister()
         {
             // Your Code
         }
 ```
 
 reCAPTCHA's response should be passed in HTTP header with specified key or `g-recaptcha-response`.
+reCAPTCHA's configuration key should be passed in HTTP head with specifed key or `g-recaptcha-type`
 
 ## License
 

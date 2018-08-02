@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0-alpha.0]
+
+## Added
+
+- Add success handler(Can be used to check response)
+- Add test reCAPTCHA secrets
+- Add di builder
+- Add implementations of `IRecaptchaConfigurationProvider` and `IRecaptchaTokenProvider` that extract info from HTTP headers
+
+## Changed
+
+- Send only one request to google api
+- Recaptcha configuration should be determined by `IRecaptchaConfigurationProvider`
+- Recaptcha token should be determined by `IRecaptchaTokenProvider`
+
+## Removed
+
+- Remove predefined configurations and attributes
+
+## Fixed
+
+- Fix Http client injection bug 
+
 ## [1.1.0-rc0] - 20-06-2018
 
 ### Added
@@ -51,7 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - I'm not a robot, Invisible and Android reCAPTCHA support.
 
-[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.1.0-rc0...HEAD
+[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha0...HEAD
+[2.0.0-alpha0]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.1.0-rc0...2.0.0-alpha0
 [1.1.0-rc0]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.0.3...1.1.0-rc0
 [1.0.3]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.0.1...1.0.2
