@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Spaier.Recaptcha
+namespace Spaier.Recaptcha.Services
 {
     public class RecaptchaConfigurationHeaderProvider : IRecaptchaConfigurationProvider
     {
@@ -14,18 +13,14 @@ namespace Spaier.Recaptcha
             this.options = options?.Value ?? throw new ArgumentException(nameof(options));
         }
 
-        public RecaptchaConfiguration GetRecaptchaConfiguration(HttpRequest request, out string key)
+        public string GetRecaptchaConfigurationKey(HttpRequest request)
         {
-            key = request.Headers[options.HeaderKey];
-            var result = options.Configurations.TryGetValue(key, out var configuration);
-            return result ? configuration : throw new RecaptchaConfigurationException("Invalid configuration key");
+            return request.Headers[options.HeaderKey];
         }
 
         public class Options
         {
             public string HeaderKey { get; set; } = RecaptchaDefaults.DefaultConfigurationHeaderKey;
-
-            public Dictionary<string, RecaptchaConfiguration> Configurations { get; set; }
         }
     }
 }

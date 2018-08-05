@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Spaier.Recaptcha
+namespace Spaier.Recaptcha.Services
 {
     public class RecaptchaTokenHeaderProvider : IRecaptchaTokenProvider
     {

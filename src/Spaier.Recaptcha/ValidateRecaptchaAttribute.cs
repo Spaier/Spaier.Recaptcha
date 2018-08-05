@@ -1,15 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Spaier.Recaptcha.Http;
 using Spaier.Recaptcha.Mvc;
+using Spaier.Recaptcha.Responses;
 
 namespace Spaier.Recaptcha
 {
     public class ValidateRecaptchaAttribute : FilterFactoryAttribute, IOrderedFilter
     {
+        /// <summary>
+        /// Allowed configurations. If equals null any configuration can be used.
+        /// </summary>
         public string[] Configurations { get; set; }
+
+        public double MinimumScore { get; set; }
+
+        public string AllowedAction { get; set; }
 
         public int Order { get; set; }
 
@@ -18,6 +28,12 @@ namespace Spaier.Recaptcha
             var service = serviceProvider.GetRequiredService<InnerAttribute>();
             service.Configurations = Configurations;
             service.Order = Order;
+            service.AllowedAction = AllowedAction;
+            if (MinimumScore < 0 || MinimumScore > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(MinimumScore));
+            }
+            service.MinimumScore = MinimumScore;
             return service;
         }
 
@@ -26,44 +42,89 @@ namespace Spaier.Recaptcha
             private readonly IRecaptchaTokenProvider tokenProvider;
             private readonly IRecaptchaConfigurationProvider configurationProvider;
             private readonly IRecaptchaHttpClient recaptchaHttpClient;
-            private readonly IRecaptchaSuccessHandler recaptchaSuccessHandler;
+            private readonly IRecaptchaConfigurationStore configurationStore;
 
-            /// <summary>
-            /// Allowed configurations. If equals null any configuration can be used.
-            /// </summary>
             public string[] Configurations { get; set; }
 
+            public double MinimumScore { get; set; }
+
+            public string AllowedAction { get; set; }
+
             public InnerAttribute(IRecaptchaTokenProvider tokenProvider, IRecaptchaConfigurationProvider configurationProvider,
-                IRecaptchaHttpClient recaptchaHttpClient, IRecaptchaSuccessHandler recaptchaSuccessHandler = null)
+                IRecaptchaHttpClient recaptchaHttpClient, IRecaptchaConfigurationStore configurationStore)
             {
                 this.tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
                 this.configurationProvider = configurationProvider ?? throw new ArgumentNullException(nameof(configurationProvider));
                 this.recaptchaHttpClient = recaptchaHttpClient ?? throw new ArgumentNullException(nameof(recaptchaHttpClient));
-                this.recaptchaSuccessHandler = recaptchaSuccessHandler;
+                this.configurationStore = configurationStore ?? throw new ArgumentNullException(nameof(configurationStore));
             }
 
             public async override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
-                var configuration = configurationProvider.GetRecaptchaConfiguration(context.HttpContext.Request, out var key);
-                if (Configurations != null && Array.BinarySearch(Configurations, key) < 0)
+                RecaptchaConfiguration configuration;
+                if (Configurations == null)
                 {
-                    throw new RecaptchaConfigurationException("Specified configuration isn't allowed");
+                    IEnumerable<RecaptchaConfiguration> configurations;
+                    if ((configurations = await configurationStore.GetRecaptchaConfigurations()).Count() == 1)
+                    {
+                        configuration = configurations.First();
+                    }
+                    else
+                    {
+                        context.ModelState.AddModelError(RecaptchaDefaults.UnallowedConfigurationError, string.Empty);
+                        goto end;
+                    }
                 }
-
-                var result = await recaptchaHttpClient.VerifyRecaptchaAsync(configuration, context.HttpContext.Request, tokenProvider);
-
-                if (result.IsSuccess)
+                else if (Configurations.Length == 1)
                 {
-                    recaptchaSuccessHandler?.OnSuccess(result, context);
+                    configuration = await configurationStore.GetRecaptchaConfiguration(Configurations[0]);
                 }
                 else
                 {
-                    foreach (var error in result.ErrorCodes)
+                    var key = configurationProvider.GetRecaptchaConfigurationKey(context.HttpContext.Request);
+                    if (Array.BinarySearch(Configurations, key) < 0)
+                    {
+                        context.ModelState.AddModelError(RecaptchaDefaults.UnallowedConfigurationError, string.Empty);
+                        goto end;
+                    }
+                    else
+                    {
+                        configuration = await configurationStore.GetRecaptchaConfiguration(key);
+                    }
+                }
+
+                var response = await recaptchaHttpClient.VerifyRecaptchaAsync(configuration, context.HttpContext.Request, tokenProvider);
+
+                if (response.IsSuccess)
+                {
+                    if (response is RecaptchaResponseV3 responseV3)
+                    {
+                        if (responseV3.Score < MinimumScore)
+                        {
+                            context.ModelState.AddModelError(RecaptchaDefaults.LowScoreError, string.Empty);
+                        }
+                        if (AllowedAction != null && responseV3.Action != AllowedAction)
+                        {
+                            context.ModelState.AddModelError(RecaptchaDefaults.UnallowedActionError, string.Empty);
+                        }
+                    }
+                    foreach (var parameter in context.ActionDescriptor.Parameters)
+                    {
+                        if (parameter.BindingInfo.BindingSource == FromRecaptchaResponseAttribute.Source)
+                        {
+                            context.ActionArguments[parameter.Name] = response;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var error in response.ErrorCodes)
                     {
                         context.ModelState.AddModelError(error, string.Empty);
                     }
                 }
 
+                end:
                 await next();
             }
         }

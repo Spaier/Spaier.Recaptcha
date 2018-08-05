@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Spaier.Recaptcha
+namespace Spaier.Recaptcha.Services
 {
     public interface IRecaptchaTokenProvider
     {

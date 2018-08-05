@@ -16,7 +16,7 @@ namespace Spaier.Recaptcha
                 case RecaptchaSecretType.V3:
                     return typeof(RecaptchaResponseV3);
                 default:
-                    throw new RecaptchaConfigurationException();
+                    return typeof(IRecaptchaResponse);
             }
         }
     }
