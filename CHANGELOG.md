@@ -7,7 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.0.0-alpha.0]
+## [2.0.0-alpha1]
+
+## Added
+
+- Pass recaptcha response with `FromRecaptchaResponseAttribute`
+- Add V3 Score and Action integration
+- Add configuration store interface
+- Add InMemory configuration store
+
+## Changed
+
+- Use model errors instead of exceptions
+
+## Fixed
+
+- Model errors cause to return 400 error in web api
+
+## Removed
+
+- Remove success handler
+
+## [2.0.0-alpha0]
 
 ## Added
 
@@ -74,7 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - I'm not a robot, Invisible and Android reCAPTCHA support.
 
-[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha0...HEAD
+[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha1...HEAD
+[2.0.0-alpha1]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha0...2.0.0-alpha1
 [2.0.0-alpha0]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.1.0-rc0...2.0.0-alpha0
 [1.1.0-rc0]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.0.3...1.1.0-rc0
 [1.0.3]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.0.2...1.0.3

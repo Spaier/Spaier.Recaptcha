@@ -76,20 +76,25 @@ public void ConfigureServices(IServiceCollection services) {
 If token passed by client-side is invalid model errors will be added to `ModelState`.
 See `RecaptchaErrorCodes` and [official docs](https://developers.google.com/recaptcha/docs/verify)
 
-3. Optionally specify reCAPTCHA allowed configurations. By default all can be used.
+3. Optionally specify reCAPTCHA allowed configurations, allowed V3 action, minimum v3 score.
+
+You can pass recaptcha response to action by using `FromRecaptchaResponseAttribute` with 
+any method parameter derived from `IRecaptchaResponse`.
 
 ```cs
         [HttpPost]
         [AllowAnonymous]
-        [ValidateRecaptcha(Configurations = new[] { "V3", "Register" }]
-        public async Task<ActionResult> ProtectedByV3AndRegister()
+        [ValidateRecaptcha(Configurations = new[] { "V3", "Register" }, MinimumScore = 0.5, AllowedAction = "register")]
+        public async Task<ActionResult> ProtectedByV3AndRegister([FromRecaptchaResponse] RecaptchaResponseV3 response)
         {
             // Your Code
         }
 ```
 
 reCAPTCHA's response should be passed in HTTP header with specified key or `g-recaptcha-response`.
+
 reCAPTCHA's configuration key should be passed in HTTP head with specifed key or `g-recaptcha-type`
+if there're more than one configurations in store or specified in attribute.
 
 ## License
 
