@@ -12,7 +12,7 @@ using Spaier.Recaptcha.Services;
 
 namespace Spaier.Recaptcha
 {
-    public class ValidateRecaptchaAttribute : FilterFactoryAttribute
+    public class ValidateRecaptchaAttribute : FilterFactoryAttribute, IOrderedFilter
     {
         /// <summary>
         /// Allowed configurations. If equals null any configuration can be used.
@@ -22,6 +22,12 @@ namespace Spaier.Recaptcha
         public double MinimumScore { get; set; }
 
         public string AllowedAction { get; set; }
+
+        /// <summary>
+        /// ModelStateInvalidFilter has order -2000.
+        /// We have to set order lower than that in order for model errors to work.
+        /// </summary>
+        public int Order => -3000;
 
         public override IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
@@ -58,7 +64,7 @@ namespace Spaier.Recaptcha
                 this.configurationStore = configurationStore ?? throw new ArgumentNullException(nameof(configurationStore));
             }
 
-            public async override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+            public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
                 RecaptchaConfiguration configuration;
                 if (Configurations == null)
