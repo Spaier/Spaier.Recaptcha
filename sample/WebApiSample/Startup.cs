@@ -18,27 +18,20 @@ namespace WebApiSample
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // Option 1
-            //services.AddRecaptcha()
-            //    .AddTokenHeaderProvider()
-            //    .AddConfigurationHeaderProvider(options =>
-            //    {
-            //        options.Configurations = new Dictionary<string, RecaptchaConfiguration>
-            //        {
-            //            [""] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2),
-            //            ["Android"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2Android),
-            //            ["V3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V3)
-            //        };
-            //    })
-            //    .AddRecaptchaHttpClient()
-            //    .UseGoogleUrl();
-
-            // Option 2
             services.AddRecaptcha()
+                // Use appsettings.json
+                //.AddInMemoryConfigurationStore(Configuration.GetSection("Recaptcha"))
+                .AddInMemoryConfigurationStore(new Dictionary<string, RecaptchaConfiguration>
+                {
+                    ["V3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V3),
+                    ["V2"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2),
+                    ["Android"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2Android)
+                })
                 .AddTokenHeaderProvider()
-                .AddConfigurationHeaderProvider(Configuration.GetSection("Recaptcha"))
+                .AddConfigurationHeaderProvider()
                 .AddRecaptchaHttpClient()
                 .UseGoogleUrl();
         }
