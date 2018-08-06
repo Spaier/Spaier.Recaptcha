@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0-alpha2]
+
+## Fixed
+
+- Null reference exception in Razor MVC when action has parameters
+
 ## [2.0.0-alpha1]
 
 ## Added
@@ -95,7 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - I'm not a robot, Invisible and Android reCAPTCHA support.
 
-[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha1...HEAD
+[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha2...HEAD
+[2.0.0-alpha2]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha1...2.0.0-alpha2
 [2.0.0-alpha1]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha0...2.0.0-alpha1
 [2.0.0-alpha0]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.1.0-rc0...2.0.0-alpha0
 [1.1.0-rc0]: https://github.com/Spaier/Spaier.Recaptcha/compare/1.0.3...1.1.0-rc0
