@@ -84,8 +84,8 @@ any method parameter derived from `IRecaptchaResponse`.
 
 reCAPTCHA's response should be passed in HTTP header with specified key or `g-recaptcha-response`.
 
-reCAPTCHA's configuration key should be passed in HTTP head with specifed key or `g-recaptcha-type`
-if there're more than one configurations in store or specified in attribute.
+reCAPTCHA's configuration key should be passed in HTTP header with specified key or `g-recaptcha-type`
+if there's more than one configuration in store or specified in attribute.
 
 ## License
 
