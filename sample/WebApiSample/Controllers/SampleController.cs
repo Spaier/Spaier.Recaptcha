@@ -19,11 +19,34 @@ namespace WebApiSample.Controllers
         }
 
         // Only V3 reCAPTCHA specified in Startup.cs is allowed
-        [ValidateRecaptcha(Configurations = new[] { "V3" }, MinimumScore = 0, AllowedAction = "api2")]
+        [ValidateRecaptcha(Configurations = new[] { "V3" })]
         public Task<ActionResult> Api2([FromRecaptchaResponse] RecaptchaResponseV3 recaptchaResponse)
         {
             Console.WriteLine(recaptchaResponse);
             return Task.FromResult((ActionResult)NoContent());
         }
+
+        // Specify V3 Action and Score
+        [ValidateRecaptcha(Configurations = new[] { "V3" }, MinimumScore = 0, AllowedAction = "api2")]
+        public Task<ActionResult> Api3([FromRecaptchaResponse] RecaptchaResponseV3 recaptchaResponse)
+        {
+            Console.WriteLine(recaptchaResponse);
+            return Task.FromResult((ActionResult)NoContent());
+        }
+
+        [ValidateRecaptcha(Configurations = new[] { "V3" }, MinimumScore = 0)]
+        [HttpPost]
+        public Task<ActionResult> Api4(SampleData data, [FromRecaptchaResponse] RecaptchaResponseV3 recaptchaResponse)
+        {
+            Console.WriteLine(recaptchaResponse);
+            return Task.FromResult((ActionResult)NoContent());
+        }
+    }
+
+    public class SampleData
+    {
+        public string Field1 { get; set; }
+
+        public int Field2 { get; set; }
     }
 }
