@@ -1,8 +1,6 @@
 ﻿using System;
-using Microsoft.Extensions.Configuration;
 using Spaier.Recaptcha;
 using Spaier.Recaptcha.DependencyInjection;
-using Spaier.Recaptcha.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
