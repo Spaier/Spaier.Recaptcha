@@ -12,7 +12,7 @@ using Spaier.Recaptcha.Services;
 
 namespace Spaier.Recaptcha
 {
-    public class ValidateRecaptchaAttribute : FilterFactoryAttribute, IOrderedFilter
+    public class ValidateRecaptchaAttribute : FilterFactoryAttribute
     {
         /// <summary>
         /// Allowed configurations. If equals null any configuration can be used.
@@ -23,13 +23,10 @@ namespace Spaier.Recaptcha
 
         public string AllowedAction { get; set; }
 
-        public int Order { get; set; }
-
         public override IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
             var service = serviceProvider.GetRequiredService<InnerAttribute>();
             service.Configurations = Configurations;
-            service.Order = Order;
             service.AllowedAction = AllowedAction;
             if (MinimumScore < 0 || MinimumScore > 1)
             {
@@ -127,7 +124,7 @@ namespace Spaier.Recaptcha
                 }
 
                 end:
-                await next();
+                await base.OnActionExecutionAsync(context, next);
             }
         }
     }
