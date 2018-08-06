@@ -115,7 +115,7 @@ namespace Spaier.Recaptcha
                     }
                     foreach (var parameter in context.ActionDescriptor.Parameters)
                     {
-                        if (parameter.BindingInfo.BindingSource == FromRecaptchaResponseAttribute.Source)
+                        if (parameter?.BindingInfo?.BindingSource == FromRecaptchaResponseAttribute.Source)
                         {
                             context.ActionArguments[parameter.Name] = response;
                         }
