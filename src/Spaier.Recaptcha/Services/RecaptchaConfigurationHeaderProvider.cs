@@ -15,7 +15,7 @@ namespace Spaier.Recaptcha.Services
 
         public string GetRecaptchaConfigurationKey(HttpRequest request)
         {
-            return request.Headers[options.HeaderKey];
+            return request?.Headers[options.HeaderKey];
         }
 
         public class Options
