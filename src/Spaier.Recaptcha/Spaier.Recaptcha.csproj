@@ -7,7 +7,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.0.0-alpha2</Version>
+    <Version>2.0.0</Version>
     <Copyright>Pavel Levchuk</Copyright>
     <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);1591;RCS1090</NoWarn>
