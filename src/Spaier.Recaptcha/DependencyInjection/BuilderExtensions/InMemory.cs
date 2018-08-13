@@ -11,8 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IRecaptchaBuilder AddInMemoryConfigurationStore(this IRecaptchaBuilder builder,
             IDictionary<string, RecaptchaConfiguration> configurations)
         {
-            builder.Services.AddSingleton<IRecaptchaConfigurationStore, InMemoryRecaptchaConfigurationStore>(services
-                => new InMemoryRecaptchaConfigurationStore(configurations));
+            builder.Services.AddSingleton<IRecaptchaConfigurationStore, InMemoryRecaptchaConfigurationStore>(
+                _ => new InMemoryRecaptchaConfigurationStore(configurations));
             return builder;
         }
 

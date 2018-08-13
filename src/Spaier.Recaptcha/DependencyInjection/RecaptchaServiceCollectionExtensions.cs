@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IRecaptchaBuilder AddRecaptcha(this IServiceCollection serviceCollection)
         {
-            if (serviceCollection == null)
+            if (serviceCollection is null)
                 throw new ArgumentNullException(nameof(serviceCollection));
 
             serviceCollection.AddTransient<ValidateRecaptchaAttribute.InnerAttribute>();

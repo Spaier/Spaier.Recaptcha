@@ -67,7 +67,7 @@ namespace Spaier.Recaptcha
             public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
                 RecaptchaConfiguration configuration;
-                if (Configurations == null)
+                if (Configurations is null)
                 {
                     IEnumerable<RecaptchaConfiguration> configurations;
                     if ((configurations = await configurationStore.GetRecaptchaConfigurations()).Count() == 1)

@@ -10,12 +10,12 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IRecaptchaBuilder AddTokenHeaderProvider(this IRecaptchaBuilder builder,
             Action<RecaptchaTokenHeaderProvider.Options> setupOptions)
         {
-            if (builder == null)
+            if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            if (setupOptions == null)
+            if (setupOptions is null)
             {
                 throw new ArgumentNullException(nameof(setupOptions));
             }
@@ -26,12 +26,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IRecaptchaBuilder AddTokenHeaderProvider(this IRecaptchaBuilder builder, IConfiguration configuration)
         {
-            if (builder == null)
+            if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            if (configuration == null)
+            if (configuration is null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
@@ -42,12 +42,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IRecaptchaBuilder AddTokenHeaderProvider(this IRecaptchaBuilder builder)
         {
-            if (builder == null)
+            if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            return builder.AddTokenHeaderProvider(options => { });
+            return builder.AddTokenHeaderProvider(_ => { });
         }
 
         internal static IRecaptchaBuilder AddTokenHeaderProviderInner(this IRecaptchaBuilder builder)
@@ -59,12 +59,12 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IRecaptchaBuilder AddConfigurationHeaderProvider(this IRecaptchaBuilder builder,
             Action<RecaptchaConfigurationHeaderProvider.Options> setupOptions)
         {
-            if (builder == null)
+            if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            if (setupOptions == null)
+            if (setupOptions is null)
             {
                 throw new ArgumentNullException(nameof(setupOptions));
             }
@@ -75,12 +75,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IRecaptchaBuilder AddConfigurationHeaderProvider(this IRecaptchaBuilder builder, IConfiguration configuration)
         {
-            if (builder == null)
+            if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            if (configuration == null)
+            if (configuration is null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
@@ -91,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IRecaptchaBuilder AddConfigurationHeaderProvider(this IRecaptchaBuilder builder)
         {
-            if (builder == null)
+            if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }

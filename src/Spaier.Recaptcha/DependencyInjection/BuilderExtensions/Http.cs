@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
             string name = "", Action<HttpClient> configureClient = null)
             where T : class, IRecaptchaHttpClient
         {
-            if (configureClient == null)
+            if (configureClient is null)
             {
                 builder.Services.AddHttpClient<IRecaptchaHttpClient, T>(name);
             }
