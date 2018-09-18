@@ -55,19 +55,18 @@ public void ConfigureServices(IServiceCollection services) {
 2. Add ValidateRecaptcha Attribute to any action you want to be protected by reCAPTCHA.
 
 ```cs
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateRecaptcha]
-        public async Task<ActionResult> SomeAction()
+        // Specify allowed configurations
+        [ValidateRecaptcha(Configurations = new[] { "V2", "V3", "V2Android" })]
+        public Task<ActionResult> Api1()
         {
-            // Your Code
+            // Your code
         }
 ```
 
 If token passed by client-side is invalid model errors will be added to `ModelState`.
-See `RecaptchaErrorCodes` and [official docs](https://developers.google.com/recaptcha/docs/verify)
+See `RecaptchaErrorCodes`, `ValidateRecaptchaAttribute.ErrorCodes` and [official docs](https://developers.google.com/recaptcha/docs/verify)
 
-3. Optionally specify reCAPTCHA allowed configurations, allowed V3 action, minimum v3 score.
+3. Optionally specify allowed V3 action and minimum v3 score(defaults to 0.5).
 
 You can pass recaptcha response to action by using `FromRecaptchaResponseAttribute` with 
 any method parameter derived from `IRecaptchaResponse`.
@@ -82,9 +81,9 @@ any method parameter derived from `IRecaptchaResponse`.
         }
 ```
 
-reCAPTCHA's response should be passed in HTTP header with specified key or `g-recaptcha-response`.
+reCAPTCHA's response should be passed in HTTP header with the specified key or `g-recaptcha-response`.
 
-reCAPTCHA's configuration key should be passed in HTTP header with specified key or `g-recaptcha-type`
+reCAPTCHA's configuration key should be passed in HTTP header with the specified key or `g-recaptcha-type`
 if there's more than one configuration in store or specified in attribute.
 
 ## License
