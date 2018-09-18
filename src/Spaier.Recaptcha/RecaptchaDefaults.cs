@@ -40,11 +40,5 @@
         /// Key that makes all requests path. Can be used for unit tests.
         /// </summary>
         public const string TestSiteKey = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
-
-        public const string LowScoreError = "recaptcha-low-score";
-
-        public const string UnallowedActionError = "recaptcha-unallowed-action";
-
-        public const string UnallowedConfigurationError = "recaptcha-unallowed-configuration";
     }
 }

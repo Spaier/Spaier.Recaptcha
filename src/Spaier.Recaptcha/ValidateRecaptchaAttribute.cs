@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +13,25 @@ namespace Spaier.Recaptcha
 {
     public class ValidateRecaptchaAttribute : FilterFactoryAttribute, IOrderedFilter
     {
+        public static class ErrorCodes
+        {
+            public const string LowScoreError = "recaptcha-low-score";
+
+            public const string UnallowedActionError = "recaptcha-unallowed-action";
+
+            public const string UnallowedConfigurationError = "recaptcha-unallowed-configuration";
+
+            public const string UnspecifiedConfigurationError = "recaptcha-unspecified-configuration";
+
+            public const string MissingConfigurationError = "recaptcha-missing-configuration";
+        }
+
         /// <summary>
         /// Allowed configurations. If equals null any configuration can be used.
         /// </summary>
         public string[] Configurations { get; set; }
 
-        public double MinimumScore { get; set; }
+        public double MinimumScore { get; set; } = 0.5;
 
         public string AllowedAction { get; set; }
 
@@ -67,50 +79,54 @@ namespace Spaier.Recaptcha
             public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
                 RecaptchaConfiguration configuration;
+
                 if (Configurations is null)
                 {
-                    IEnumerable<RecaptchaConfiguration> configurations;
-                    if ((configurations = await configurationStore.GetRecaptchaConfigurations()).Count() == 1)
+                    var configurations = await configurationStore.GetRecaptchaConfigurations();
+                    if (configurations.Count() == 1)
                     {
-                        configuration = configurations.First();
+                        configuration = configurations.Values.First();
                     }
                     else
                     {
-                        context.ModelState.AddModelError(RecaptchaDefaults.UnallowedConfigurationError, string.Empty);
+                        context.ModelState.AddModelError(ErrorCodes.UnspecifiedConfigurationError, string.Empty);
                         goto end;
                     }
-                }
-                else if (Configurations.Length == 1)
-                {
-                    configuration = await configurationStore.GetRecaptchaConfiguration(Configurations[0]);
                 }
                 else
                 {
                     var key = configurationProvider.GetRecaptchaConfigurationKey(context.HttpContext.Request);
-                    if (Array.BinarySearch(Configurations, key) < 0)
+                    if ((key == null && Configurations.Length == 1) || Configurations.Contains(key))
                     {
-                        context.ModelState.AddModelError(RecaptchaDefaults.UnallowedConfigurationError, string.Empty);
-                        goto end;
+                        bool isFound;
+                        (isFound, configuration) = await configurationStore.TryGetRecaptchaConfiguration(Configurations[0]);
+                        if (!isFound)
+                        {
+                            context.ModelState.AddModelError(ErrorCodes.MissingConfigurationError, string.Empty);
+                            goto end;
+                        }
                     }
                     else
                     {
-                        configuration = await configurationStore.GetRecaptchaConfiguration(key);
+                        context.ModelState.AddModelError(ErrorCodes.UnallowedConfigurationError, string.Empty);
+                        goto end;
                     }
                 }
 
-                var response = await recaptchaHttpClient.VerifyRecaptchaAsync(configuration, context.HttpContext.Request, tokenProvider);
+                var response = await recaptchaHttpClient
+                    .VerifyRecaptchaAsync<RecaptchaResponse>(configuration, context.HttpContext.Request, tokenProvider);
 
                 if (response.IsSuccess)
                 {
-                    if (response is RecaptchaResponseV3 responseV3)
+                    if (configuration.SecretType == RecaptchaSecretType.V3)
                     {
-                        if (responseV3.Score < MinimumScore)
+                        if (response.Score.HasValue && response.Score < MinimumScore)
                         {
-                            context.ModelState.AddModelError(RecaptchaDefaults.LowScoreError, string.Empty);
+                            context.ModelState.AddModelError(ErrorCodes.LowScoreError, string.Empty);
                         }
-                        if (AllowedAction != null && responseV3.Action != AllowedAction)
+                        if (AllowedAction != null && response.Action != AllowedAction)
                         {
-                            context.ModelState.AddModelError(RecaptchaDefaults.UnallowedActionError, string.Empty);
+                            context.ModelState.AddModelError(ErrorCodes.UnallowedActionError, string.Empty);
                         }
                     }
                     foreach (var parameter in context.ActionDescriptor.Parameters)
@@ -129,7 +145,7 @@ namespace Spaier.Recaptcha
                     }
                 }
 
-                end:
+            end:
                 await base.OnActionExecutionAsync(context, next);
             }
         }
