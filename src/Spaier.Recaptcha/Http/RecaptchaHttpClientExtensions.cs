@@ -26,21 +26,16 @@ namespace Spaier.Recaptcha.Http
             string secret, string clientResponse, IPAddress remoteIp)
             where TResponse : IRecaptchaResponse
         {
-            return (TResponse)await httpClient.VerifyRecaptchaAsync(typeof(TResponse), secret, clientResponse, remoteIp.ToString());
+            return (TResponse)await httpClient.VerifyRecaptchaAsync(typeof(TResponse), secret, clientResponse,
+                remoteIp.ToString());
         }
 
-        public static Task<IRecaptchaResponse> VerifyRecaptchaAsync(this IRecaptchaHttpClient httpClient,
-            RecaptchaConfiguration configuration, string clientResponse, IPAddress remoteIp)
-        {
-            return httpClient.VerifyRecaptchaAsync(configuration.SecretType.GetResponseType(), configuration.Secret,
-                clientResponse, remoteIp.ToString());
-        }
-
-        public static Task<IRecaptchaResponse> VerifyRecaptchaAsync(this IRecaptchaHttpClient httpClient,
+        public static Task<TResponse> VerifyRecaptchaAsync<TResponse>(this IRecaptchaHttpClient httpClient,
             RecaptchaConfiguration configuration, HttpRequest request, IRecaptchaTokenProvider tokenProvider)
+            where TResponse : IRecaptchaResponse
         {
-            return httpClient.VerifyRecaptchaAsync(configuration.SecretType.GetResponseType(), configuration.Secret,
-                tokenProvider.GetToken(request), request.HttpContext.Connection.RemoteIpAddress.ToString());
+            return httpClient.VerifyRecaptchaAsync<TResponse>(configuration.Secret, tokenProvider.GetToken(request),
+                request.HttpContext.Connection.RemoteIpAddress);
         }
     }
 }
