@@ -16,6 +16,6 @@ namespace Spaier.Recaptcha
         /// Returns all configurations.
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<RecaptchaConfiguration>> GetRecaptchaConfigurations();
+        Task<IReadOnlyDictionary<string, RecaptchaConfiguration>> GetRecaptchaConfigurations();
     }
 }

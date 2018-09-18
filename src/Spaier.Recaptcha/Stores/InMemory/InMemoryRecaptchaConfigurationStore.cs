@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace Spaier.Recaptcha.Stores.InMemory
@@ -18,9 +18,10 @@ namespace Spaier.Recaptcha.Stores.InMemory
             return Task.FromResult(configurations[key]);
         }
 
-        public Task<IEnumerable<RecaptchaConfiguration>> GetRecaptchaConfigurations()
+        public Task<IReadOnlyDictionary<string, RecaptchaConfiguration>> GetRecaptchaConfigurations()
         {
-            return Task.FromResult(configurations.Values.AsEnumerable());
+            return Task.FromResult((IReadOnlyDictionary<string, RecaptchaConfiguration>)
+                new ReadOnlyDictionary<string, RecaptchaConfiguration>(configurations));
         }
     }
 }
