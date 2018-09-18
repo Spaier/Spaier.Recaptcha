@@ -76,7 +76,7 @@ any method parameter derived from `IRecaptchaResponse`.
         [HttpPost]
         [AllowAnonymous]
         [ValidateRecaptcha(Configurations = new[] { "V3", "V2" }, MinimumScore = 0.5, AllowedAction = "register")]
-        public async Task<ActionResult> ProtectedByV3AndV2([FromRecaptchaResponse] RecaptchaResponseV3 response)
+        public async Task<ActionResult> ProtectedByV3AndV2([FromRecaptchaResponse] RecaptchaResponse response)
         {
             // Your Code
         }
