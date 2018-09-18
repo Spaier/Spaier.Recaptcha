@@ -13,9 +13,9 @@ namespace Spaier.Recaptcha.Stores.InMemory
             this.configurations = configurations;
         }
 
-        public Task<RecaptchaConfiguration> GetRecaptchaConfiguration(string key)
+        public Task<(bool IsFound, RecaptchaConfiguration Configuration)> TryGetRecaptchaConfiguration(string key)
         {
-            return Task.FromResult(configurations[key]);
+            return Task.FromResult((configurations.TryGetValue(key, out var configuration), configuration));
         }
 
         public Task<IReadOnlyDictionary<string, RecaptchaConfiguration>> GetRecaptchaConfigurations()

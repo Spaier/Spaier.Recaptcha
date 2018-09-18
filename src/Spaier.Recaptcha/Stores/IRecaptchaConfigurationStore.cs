@@ -6,11 +6,11 @@ namespace Spaier.Recaptcha
     public interface IRecaptchaConfigurationStore
     {
         /// <summary>
-        /// Retrieves configuration by key.
+        /// Tries to return configuration by key.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        Task<RecaptchaConfiguration> GetRecaptchaConfiguration(string key);
+        Task<(bool IsFound, RecaptchaConfiguration Configuration)> TryGetRecaptchaConfiguration(string key);
 
         /// <summary>
         /// Returns all configurations.
