@@ -6,16 +6,16 @@ namespace Spaier.Recaptcha.Services
 {
     public class RecaptchaConfigurationHeaderProvider : IRecaptchaConfigurationProvider
     {
-        private readonly Options options;
+        private readonly string recaptchaConfigurationHeaderKey;
 
         public RecaptchaConfigurationHeaderProvider(IOptions<Options> options)
         {
-            this.options = options?.Value ?? throw new ArgumentException(nameof(options));
+            recaptchaConfigurationHeaderKey = options?.Value.HeaderKey ?? throw new ArgumentException(nameof(options));
         }
 
         public string GetRecaptchaConfigurationKey(HttpRequest request)
         {
-            return request?.Headers[options.HeaderKey];
+            return request?.Headers[recaptchaConfigurationHeaderKey];
         }
 
         public class Options
