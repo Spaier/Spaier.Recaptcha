@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0]
+
+## Fixed
+
+- Configuration is not allowed errors with multiple configurations
+- Add `recaptcha-unspecified-configuration` MVC error
+- Add `recaptcha-missing-configuration` MVC error
+
+## Added
+
+- `RecaptchaResponse` type that contains properties from all other responses
+
+## Changed
+
+- `IRecaptchaConfigurationStore` must implement `TryGetRecaptchaConfiguration`
+- `ValidateRecaptchaAttribute` MVC errors were moved to `ValidateRecaptchaAttribute.ErrorCodes` from `RecaptchaDefaults`
+- `MinimumScore` defaults to 0.5
+
+## Removed
+
+- Version specific responses
+- Removed `IRecaptchaConfigurationStore.GetRecaptchaConfiguration`
+
 ## [2.0.0]
 
 ## Fixed
@@ -63,7 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix Http client injection bug 
 
-[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0...HEAD
+[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0...3.0.0
 [2.0.0]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha2...2.0.0
 [2.0.0-alpha2]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha1...2.0.0-alpha2
 [2.0.0-alpha1]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha0...2.0.0-alpha1
