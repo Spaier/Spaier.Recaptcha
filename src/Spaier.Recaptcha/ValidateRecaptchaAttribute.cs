@@ -15,14 +15,25 @@ namespace Spaier.Recaptcha
     {
         public static class ErrorCodes
         {
+            /// <summary>
+            /// The reCAPTCHA score is too low. 
+            /// </summary>
             public const string LowScoreError = "recaptcha-low-score";
-
+            /// <summary>
+            /// The specified reCAPTCHA action isn't allowed.
+            /// </summary>
             public const string UnallowedActionError = "recaptcha-unallowed-action";
-
+            /// <summary>
+            /// The specified configuration isn't allowed.
+            /// </summary>
             public const string UnallowedConfigurationError = "recaptcha-unallowed-configuration";
-
+            /// <summary>
+            /// Configuration wasn't specified.
+            /// </summary>
             public const string UnspecifiedConfigurationError = "recaptcha-unspecified-configuration";
-
+            /// <summary>
+            /// The specified configuration doesn't exist in the store.
+            /// </summary>
             public const string MissingConfigurationError = "recaptcha-missing-configuration";
         }
 
@@ -108,7 +119,8 @@ namespace Spaier.Recaptcha
                     }
                     else
                     {
-                        context.ModelState.AddModelError(ErrorCodes.UnallowedConfigurationError, string.Empty);
+                        var errorCode = key == null ? ErrorCodes.UnspecifiedConfigurationError : ErrorCodes.UnallowedConfigurationError;
+                        context.ModelState.AddModelError(errorCode, string.Empty);
                         goto end;
                     }
                 }
