@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0]
+
+## Fixed
+
+- `AllowedAction` is checked for V2 and V3 reCAPTCHA
+
+## Added
+
+- Added Custom url provider
+
+## Changed
+
+- `RecaptchaSecretType` is obsolete
+
 ## [3.0.0]
 
 ## Fixed
@@ -86,7 +100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix Http client injection bug 
 
-[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/Spaier/Spaier.Recaptcha/compare/3.1.0...HEAD
+[3.1.0]: https://github.com/Spaier/Spaier.Recaptcha/compare/3.0.0...3.1.0
 [3.0.0]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0...3.0.0
 [2.0.0]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha2...2.0.0
 [2.0.0-alpha2]: https://github.com/Spaier/Spaier.Recaptcha/compare/2.0.0-alpha1...2.0.0-alpha2
