@@ -12,7 +12,7 @@ namespace WebApiSample.Controllers
     public class SampleController : ControllerBase
     {
         // Actions can be used for any reCAPTCHA.
-        [ValidateRecaptcha(Configurations = new[] { "Sitekey1" }, AllowedAction = "sample", MinimumScore = 0.3)]
+        [ValidateRecaptcha(Configurations = new[] { "Sitekey1" }, AllowedAction = "background", MinimumScore = 0.3)]
         [HttpPost]
         public Task<ActionResult<RecaptchaResponse>> SampleApi(SampleData data, [FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
         {
