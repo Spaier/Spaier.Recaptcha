@@ -56,7 +56,8 @@ public void ConfigureServices(IServiceCollection services) {
 
 2. Apply `ValidateRecaptcha` attribute to an action.
 
-AllowedAction works with V2 or V3.
+AllowedAction works with V2 or V3. Don't specify to skip action check.
+
 MinimumScore works with V3 and defaults to 0.5
 
 You can pass a recaptcha response to an action by using the `FromRecaptchaResponseAttribute` with 
