@@ -130,16 +130,13 @@ namespace Spaier.Recaptcha
 
                 if (response.IsSuccess)
                 {
-                    if (configuration.SecretType == RecaptchaSecretType.V3)
+                    if (response.Score.HasValue && response.Score < MinimumScore)
                     {
-                        if (response.Score.HasValue && response.Score < MinimumScore)
-                        {
-                            context.ModelState.AddModelError(ErrorCodes.LowScoreError, string.Empty);
-                        }
-                        if (AllowedAction != null && response.Action != AllowedAction)
-                        {
-                            context.ModelState.AddModelError(ErrorCodes.UnallowedActionError, string.Empty);
-                        }
+                        context.ModelState.AddModelError(ErrorCodes.LowScoreError, string.Empty);
+                    }
+                    if (AllowedAction != null && response.Action != AllowedAction)
+                    {
+                        context.ModelState.AddModelError(ErrorCodes.UnallowedActionError, string.Empty);
                     }
                     foreach (var parameter in context.ActionDescriptor.Parameters)
                     {
