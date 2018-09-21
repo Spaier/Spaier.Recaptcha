@@ -26,14 +26,16 @@ namespace WebApiSample
                 //.AddInMemoryConfigurationStore(Configuration.GetSection("Recaptcha"))
                 .AddInMemoryConfigurationStore(new Dictionary<string, RecaptchaConfiguration>
                 {
-                    ["V3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V3),
-                    ["V2"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2),
-                    ["Android"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2Android)
+                    ["Sitekey1"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey),
+                    ["Sitekey2"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey),
+                    ["Sitekey3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey)
                 })
                 .AddTokenHeaderProvider()
                 .AddConfigurationHeaderProvider()
                 .AddRecaptchaHttpClient()
                 .UseGoogleUrl();
+            // UseGlobalUrl(); // will use recaptcha.net mirror for countries where google.com is blocked.
+            // UseCustomUrl("your_url"); // will use custom url for validation.
         }
 
         public void Configure(IApplicationBuilder app)

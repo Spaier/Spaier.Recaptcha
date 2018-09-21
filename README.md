@@ -41,50 +41,44 @@ public void ConfigureServices(IServiceCollection services) {
         //.AddInMemoryConfigurationStore(Configuration.GetSection("Recaptcha"))
         .AddInMemoryConfigurationStore(new Dictionary<string, RecaptchaConfiguration>
         {
-            ["V3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V3),
-            ["V2"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2),
-            ["Android"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2Android)
+            ["Sitekey1"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey),
+            ["Sitekey2"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey),
+            ["Sitekey3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey)
         })
         .AddTokenHeaderProvider()
         .AddConfigurationHeaderProvider()
         .AddRecaptchaHttpClient()
         .UseGoogleUrl();
+		// UseGlobalUrl(); // will use recaptcha.net mirror. Useful for countries where google.com is blocked.
+        // UseCustomUrl("your_url"); // will use custom url for validation.
 }
 ```
 
-2. Add ValidateRecaptcha Attribute to any action you want to be protected by reCAPTCHA.
+2. Apply `ValidateRecaptcha` attribute to an action.
 
-```cs
-        // Specify allowed configurations
-        [ValidateRecaptcha(Configurations = new[] { "V2", "V3", "V2Android" })]
-        public Task<ActionResult> Api1()
-        {
-            // Your code
-        }
-```
+AllowedAction works with V2 or V3.
+MinimumScore works with V3 and defaults to 0.5
 
-If token passed by client-side is invalid model errors will be added to `ModelState`.
-See `RecaptchaErrorCodes`, `ValidateRecaptchaAttribute.ErrorCodes` and [official docs](https://developers.google.com/recaptcha/docs/verify)
-
-3. Optionally specify allowed V3 action and minimum v3 score(defaults to 0.5).
-
-You can pass recaptcha response to action by using `FromRecaptchaResponseAttribute` with 
-any method parameter derived from `IRecaptchaResponse`.
+You can pass a recaptcha response to an action by using the `FromRecaptchaResponseAttribute` with 
+any method parameter derived from the `IRecaptchaResponse`.
 
 ```cs
         [HttpPost]
         [AllowAnonymous]
-        [ValidateRecaptcha(Configurations = new[] { "V3", "V2" }, MinimumScore = 0.5, AllowedAction = "register")]
+        [ValidateRecaptcha(Configurations = new[] { "Sitekey1", "Sitekey2" }, MinimumScore = 0.7, AllowedAction = "register")]
         public async Task<ActionResult> ProtectedByV3AndV2([FromRecaptchaResponse] RecaptchaResponse response)
         {
             // Your Code
         }
 ```
 
-reCAPTCHA's response should be passed in HTTP header with the specified key or `g-recaptcha-response`.
+A reCAPTCHA's response should be passed in a HTTP header with the specified key or `g-recaptcha-response`.
 
-reCAPTCHA's configuration key should be passed in HTTP header with the specified key or `g-recaptcha-type`
-if there's more than one configuration in store or specified in attribute.
+A reCAPTCHA's configuration key should be passed in a HTTP header with the specified key or `g-recaptcha-type`
+if there's more than one configuration in store or specified in `Configurations`.
+
+If token passed by client-side is invalid model errors will be added to `ModelState`.
+See `RecaptchaErrorCodes`, `ValidateRecaptchaAttribute.ErrorCodes` and [official docs](https://developers.google.com/recaptcha/docs/verify)
 
 ## License
 

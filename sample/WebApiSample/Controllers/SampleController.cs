@@ -11,24 +11,10 @@ namespace WebApiSample.Controllers
     [ApiController]
     public class SampleController : ControllerBase
     {
-        // Specify allowed configurations
-        [ValidateRecaptcha(Configurations = new[] { "V2", "V3", "V2Android" })]
-        public Task<ActionResult> Api1()
-        {
-            return Task.FromResult((ActionResult)NoContent());
-        }
-
-        // Specify V3 Action and Score
-        [ValidateRecaptcha(Configurations = new[] { "V3" }, MinimumScore = 0, AllowedAction = "api2")]
-        public Task<ActionResult> Api2([FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
-        {
-            Console.WriteLine(recaptchaResponse);
-            return Task.FromResult((ActionResult)NoContent());
-        }
-
-        [ValidateRecaptcha(Configurations = new[] { "V3" }, MinimumScore = 0)]
+        // Actions can be used for any reCAPTCHA.
+        [ValidateRecaptcha(Configurations = new[] { "Sitekey1" }, AllowedAction = "sample", MinimumScore = 0.3)]
         [HttpPost]
-        public Task<ActionResult> Api3(SampleData data, [FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
+        public Task<ActionResult> SampleApi(SampleData data, [FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
         {
             Console.WriteLine(recaptchaResponse);
             return Task.FromResult((ActionResult)NoContent());
