@@ -7,6 +7,12 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class HttpRecaptchaBuilderExtensions
     {
+        public static IRecaptchaBuilder UseCustomUrl(this IRecaptchaBuilder builder, string url)
+        {
+            builder.Services.AddSingleton<IVerifyUrlProvider>(sp => new CustomVerifyUrlProvider(url));
+            return builder;
+        }
+
         public static IRecaptchaBuilder UseGoogleUrl(this IRecaptchaBuilder builder)
         {
             builder.Services.AddSingleton<IVerifyUrlProvider, GoogleVerifyUrlProvider>();
