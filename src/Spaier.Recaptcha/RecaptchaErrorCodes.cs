@@ -26,5 +26,10 @@
         /// The request is invalid or malformed.
         /// </summary>
         public const string BadRequest = "bad-request";
+
+        /// <summary>
+        /// The request is a duplicate or it has expired.
+        /// </summary>
+        public const string TimeoutOrDuplicate = "timeout-or-duplicate";
     }
 }
