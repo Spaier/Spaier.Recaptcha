@@ -1,5 +1,8 @@
-﻿namespace Spaier.Recaptcha
+﻿using System;
+
+namespace Spaier.Recaptcha
 {
+    [Obsolete]
     public enum RecaptchaSecretType
     {
         V2,
