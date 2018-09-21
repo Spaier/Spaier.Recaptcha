@@ -24,5 +24,29 @@ namespace Spaier.Recaptcha.Responses
         /// </summary>
         [JsonProperty("error-codes")]
         string[] ErrorCodes { get; set; }
+
+        /// <summary>
+        /// The hostname of the site where the reCAPTCHA was solved.
+        /// </summary>
+        [JsonProperty("hostname")]
+        string HostName { get; set; }
+
+        /// <summary>
+        /// The package name of the app where the reCAPTCHA was solved.
+        /// </summary>
+        [JsonProperty("apk_package_name")]
+        string ApkPackageName { get; set; }
+
+        /// <summary>
+        /// The score for this request (0.0 - 1.0).
+        /// </summary>
+        [JsonProperty("score")]
+        double? Score { get; set; }
+
+        /// <summary>
+        /// The action name for this request (important to verify).
+        /// </summary>
+        [JsonProperty("action")]
+        string Action { get; set; }
     }
 }
