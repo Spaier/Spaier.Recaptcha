@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,10 @@ namespace Spaier.Recaptcha
     {
         public static class ErrorCodes
         {
+            /// <summary>
+            /// The reCAPTCHA wasn't successful and no other error occured.
+            /// </summary>
+            public const string NoSuccessError = "recaptcha-no-success";
             /// <summary>
             /// The reCAPTCHA score is too low. 
             /// </summary>
@@ -38,13 +43,29 @@ namespace Spaier.Recaptcha
         }
 
         /// <summary>
-        /// Allowed configurations. If equals null any configuration can be used.
+        /// Allowed configurations.
+        /// If only one is specified you can omit configuration.
+        /// If none is specified you can use any configuration.
+        /// <see cref="ErrorCodes.MissingConfigurationError"/>
+        /// <see cref="ErrorCodes.UnspecifiedConfigurationError"/>
+        /// <see cref="ErrorCodes.UnallowedConfigurationError"/>
         /// </summary>
         public string[] Configurations { get; set; }
 
+        /// <summary>
+        /// <see cref="ErrorCodes.LowScoreError"/>.
+        /// </summary>
         public double MinimumScore { get; set; } = 0.5;
 
+        /// <summary>
+        /// <see cref="ErrorCodes.UnallowedActionError"/>.
+        /// </summary>
         public string AllowedAction { get; set; }
+
+        /// <summary>
+        /// If true adds response's ErrorCodes to MVC ModelState.
+        /// </summary>
+        public bool UseModelErrors { get; set; } = true;
 
         /// <summary>
         /// ModelStateInvalidFilter has order -2000.
@@ -57,6 +78,7 @@ namespace Spaier.Recaptcha
             var service = serviceProvider.GetRequiredService<InnerAttribute>();
             service.Configurations = Configurations;
             service.AllowedAction = AllowedAction;
+            service.UseModelErrors = UseModelErrors;
             if (MinimumScore < 0 || MinimumScore > 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(MinimumScore));
@@ -78,6 +100,8 @@ namespace Spaier.Recaptcha
 
             public string AllowedAction { get; set; }
 
+            public bool UseModelErrors { get; set; }
+
             public InnerAttribute(IRecaptchaTokenProvider tokenProvider, IRecaptchaConfigurationProvider configurationProvider,
                 IRecaptchaHttpClient recaptchaHttpClient, IRecaptchaConfigurationStore configurationStore)
             {
@@ -89,7 +113,10 @@ namespace Spaier.Recaptcha
 
             public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
-                RecaptchaConfiguration configuration;
+                bool noResponse = false;
+                var customErrors = new List<string>();
+                RecaptchaConfiguration configuration = null;
+                RecaptchaResponse response;
 
                 if (Configurations is null)
                 {
@@ -100,8 +127,8 @@ namespace Spaier.Recaptcha
                     }
                     else
                     {
-                        context.ModelState.AddModelError(ErrorCodes.UnspecifiedConfigurationError, string.Empty);
-                        goto end;
+                        customErrors.Add(ErrorCodes.UnspecifiedConfigurationError);
+                        noResponse = true;
                     }
                 }
                 else
@@ -113,31 +140,57 @@ namespace Spaier.Recaptcha
                         (isFound, configuration) = await configurationStore.TryGetRecaptchaConfiguration(Configurations[0]);
                         if (!isFound)
                         {
-                            context.ModelState.AddModelError(ErrorCodes.MissingConfigurationError, string.Empty);
-                            goto end;
+                            customErrors.Add(ErrorCodes.MissingConfigurationError);
+                            noResponse = true;
                         }
                     }
                     else
                     {
                         var errorCode = key == null ? ErrorCodes.UnspecifiedConfigurationError : ErrorCodes.UnallowedConfigurationError;
-                        context.ModelState.AddModelError(errorCode, string.Empty);
-                        goto end;
+                        customErrors.Add(errorCode);
+                        noResponse = true;
                     }
                 }
 
-                var response = await recaptchaHttpClient
-                    .VerifyRecaptchaAsync<RecaptchaResponse>(configuration, context.HttpContext.Request, tokenProvider);
-
-                if (response.IsSuccess)
+                if (noResponse)
                 {
-                    if (response.Score.HasValue && response.Score < MinimumScore)
+                    response = new RecaptchaResponse()
                     {
-                        context.ModelState.AddModelError(ErrorCodes.LowScoreError, string.Empty);
-                    }
-                    if (AllowedAction != null && response.Action != AllowedAction)
+                        IsSuccess = false,
+                        ErrorCodes = customErrors.ToArray()
+                    };
+                }
+                else
+                {
+                    response = await recaptchaHttpClient
+                        .VerifyRecaptchaAsync<RecaptchaResponse>(configuration, context.HttpContext.Request, tokenProvider);
+
+                    if (response.IsSuccess)
                     {
-                        context.ModelState.AddModelError(ErrorCodes.UnallowedActionError, string.Empty);
+                        if (response.Score.HasValue && response.Score < MinimumScore)
+                        {
+                            customErrors.Add(ErrorCodes.LowScoreError);
+                        }
+
+                        if (!(AllowedAction is null) && AllowedAction != response.Action)
+                        {
+                            customErrors.Add(ErrorCodes.UnallowedActionError);
+                        }
                     }
+                    else if (customErrors.Count == 0 && (response.ErrorCodes is null || response.ErrorCodes.Length == 0))
+                    {
+                        customErrors.Add(ErrorCodes.NoSuccessError);
+                    }
+
+                    if (customErrors.Count > 0)
+                    {
+                        response.ErrorCodes = (response.ErrorCodes is null
+                            ? customErrors : customErrors.Union(response.ErrorCodes)).ToArray();
+                    }
+                }
+
+                if (!(context?.ActionDescriptor?.Parameters is null))
+                {
                     foreach (var parameter in context.ActionDescriptor.Parameters)
                     {
                         if (parameter?.BindingInfo?.BindingSource == FromRecaptchaResponseAttribute.Source)
@@ -146,7 +199,8 @@ namespace Spaier.Recaptcha
                         }
                     }
                 }
-                else
+
+                if (UseModelErrors && !(response?.ErrorCodes is null))
                 {
                     foreach (var error in response.ErrorCodes)
                     {
@@ -154,7 +208,6 @@ namespace Spaier.Recaptcha
                     }
                 }
 
-            end:
                 await base.OnActionExecutionAsync(context, next);
             }
         }
