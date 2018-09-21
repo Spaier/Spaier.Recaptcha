@@ -56,9 +56,18 @@ public void ConfigureServices(IServiceCollection services) {
 
 2. Apply `ValidateRecaptcha` attribute to an action.
 
-AllowedAction works with V2 or V3. Don't specify to skip action check.
+`Configurations` defines allowed configurations for an action.
+If none is specified you can use any configuration.
+If only one is specified you can omit configuration token.
 
-MinimumScore works with V3 and defaults to 0.5
+`AllowedAction` works with V2 or V3.
+Don't specify to skip action check.
+
+`MinimumScore` works with V3.
+Defaults to `0.5`.
+
+`UseModelErrors` determines whether errors will be added to MVC Model.
+True by default.
 
 You can pass a recaptcha response to an action by using the `FromRecaptchaResponseAttribute` with 
 any method parameter derived from the `IRecaptchaResponse`.

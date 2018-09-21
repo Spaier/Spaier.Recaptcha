@@ -15,7 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Added
 
+- Added `recaptcha-no-success` error code
+- Added `timeout-or-duplicate` error code
 - Added Custom url provider
+- Added `AddModelErrors` flag
+- Custom errors are added to `ErrorCodes`
 
 ## Changed
 
