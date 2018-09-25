@@ -7,8 +7,14 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class RecaptchaBuilderExtensionsCore
     {
+        /// <summary>
+        /// Specifies that reCAPTCHA token should be passed in http header.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="setupOptions"></param>
+        /// <returns></returns>
         public static IRecaptchaBuilder AddTokenHeaderProvider(this IRecaptchaBuilder builder,
-            Action<RecaptchaTokenHeaderProvider.Options> setupOptions)
+            Action<RecaptchaTokenHeaderProvider.Options> setupOptions = null)
         {
             if (builder is null)
             {
@@ -17,13 +23,19 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (setupOptions is null)
             {
-                throw new ArgumentNullException(nameof(setupOptions));
+                setupOptions = _ => { };
             }
 
             builder.Services.Configure(setupOptions);
             return builder.AddTokenHeaderProviderInner();
         }
 
+        /// <summary>
+        /// Specifies that reCAPTCHA token should be passed in http header.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         public static IRecaptchaBuilder AddTokenHeaderProvider(this IRecaptchaBuilder builder, IConfiguration configuration)
         {
             if (builder is null)
@@ -40,24 +52,20 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder.AddTokenHeaderProviderInner();
         }
 
-        public static IRecaptchaBuilder AddTokenHeaderProvider(this IRecaptchaBuilder builder)
-        {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            return builder.AddTokenHeaderProvider(_ => { });
-        }
-
         internal static IRecaptchaBuilder AddTokenHeaderProviderInner(this IRecaptchaBuilder builder)
         {
             builder.Services.AddSingleton<IRecaptchaTokenProvider, RecaptchaTokenHeaderProvider>();
             return builder;
         }
 
+        /// <summary>
+        /// Specifies that configuration should be passed in http header.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="setupOptions"></param>
+        /// <returns></returns>
         public static IRecaptchaBuilder AddConfigurationHeaderProvider(this IRecaptchaBuilder builder,
-            Action<RecaptchaConfigurationHeaderProvider.Options> setupOptions)
+            Action<RecaptchaConfigurationHeaderProvider.Options> setupOptions = null)
         {
             if (builder is null)
             {
@@ -66,13 +74,19 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (setupOptions is null)
             {
-                throw new ArgumentNullException(nameof(setupOptions));
+                setupOptions = _ => { };
             }
 
             builder.Services.Configure(setupOptions);
             return builder.AddConfigurationHeaderProviderInner();
         }
 
+        /// <summary>
+        /// Specifies that configuration should be passed in http header.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         public static IRecaptchaBuilder AddConfigurationHeaderProvider(this IRecaptchaBuilder builder, IConfiguration configuration)
         {
             if (builder is null)
@@ -87,16 +101,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.Services.Configure<RecaptchaConfigurationHeaderProvider.Options>(configuration);
             return builder.AddConfigurationHeaderProviderInner();
-        }
-
-        public static IRecaptchaBuilder AddConfigurationHeaderProvider(this IRecaptchaBuilder builder)
-        {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            return builder.AddConfigurationHeaderProvider(options => { });
         }
 
         internal static IRecaptchaBuilder AddConfigurationHeaderProviderInner(this IRecaptchaBuilder builder)
