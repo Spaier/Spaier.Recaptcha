@@ -113,46 +113,73 @@ namespace Spaier.Recaptcha
 
             public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
-                bool noResponse = false;
                 var customErrors = new List<string>();
                 RecaptchaConfiguration configuration = null;
                 RecaptchaResponse response;
 
-                if (Configurations is null)
+                var key = configurationProvider.GetRecaptchaConfigurationKey(context.HttpContext.Request);
+                var configurations = await configurationStore.GetRecaptchaConfigurations();
+
+                void AddError(string error)
                 {
-                    var configurations = await configurationStore.GetRecaptchaConfigurations();
-                    if (configurations.Count() == 1)
+                    customErrors.Add(error);
+                }
+
+                async Task SetConfiguration(string configurationKey)
+                {
+                    bool isFound;
+                    (isFound, configuration) = await configurationStore.TryGetRecaptchaConfiguration(configurationKey);
+                    if (!isFound)
                     {
-                        configuration = configurations.Values.First();
-                    }
-                    else
-                    {
-                        customErrors.Add(ErrorCodes.UnspecifiedConfigurationError);
-                        noResponse = true;
+                        AddError(ErrorCodes.MissingConfigurationError);
                     }
                 }
-                else
+
+                if (Configurations is null)
                 {
-                    var key = configurationProvider.GetRecaptchaConfigurationKey(context.HttpContext.Request);
-                    if ((key == null && Configurations.Length == 1) || Configurations.Contains(key))
+                    if (key is null)
                     {
-                        bool isFound;
-                        (isFound, configuration) = await configurationStore.TryGetRecaptchaConfiguration(Configurations[0]);
-                        if (!isFound)
+                        if (configurations.Count() == 1)
                         {
-                            customErrors.Add(ErrorCodes.MissingConfigurationError);
-                            noResponse = true;
+                            configuration = configurations.Values.First();
+                        }
+                        else
+                        {
+                            AddError(ErrorCodes.UnspecifiedConfigurationError);
                         }
                     }
                     else
                     {
-                        var errorCode = key == null ? ErrorCodes.UnspecifiedConfigurationError : ErrorCodes.UnallowedConfigurationError;
-                        customErrors.Add(errorCode);
-                        noResponse = true;
+                        await SetConfiguration(key);
+                    }
+                }
+                else
+                {
+                    if (key is null)
+                    {
+                        if (Configurations.Length == 1)
+                        {
+                            await SetConfiguration(Configurations[0]);
+                        }
+                        else
+                        {
+                            AddError(ErrorCodes.UnspecifiedConfigurationError);
+                        }
+                    }
+                    else
+                    {
+                        if (Configurations.Contains(key))
+                        {
+                            await SetConfiguration(key);
+                        }
+                        else
+                        {
+                            AddError(ErrorCodes.UnallowedConfigurationError);
+                        }
                     }
                 }
 
-                if (noResponse)
+                if (customErrors.Count > 0)
                 {
                     response = new RecaptchaResponse()
                     {
