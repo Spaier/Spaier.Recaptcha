@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder"></param>
         /// <param name="name"></param>
         /// <param name="configureClient"></param>
-        /// <param name="configureHttpBuilder">You can configure retry policies there.</param>
+        /// <param name="configureHttpBuilder">You can configure retry policies here.</param>
         /// <returns></returns>
         public static IRecaptchaBuilder AddRecaptchaHttpClient(this IRecaptchaBuilder builder,
             string name = null, Action<HttpClient> configureClient = null, Action<IHttpClientBuilder> configureHttpBuilder = null)
@@ -63,7 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder"></param>
         /// <param name="name"></param>
         /// <param name="configureClient"></param>
-        /// <param name="configureHttpBuilder">You can configure retry policies there.</param>
+        /// <param name="configureHttpBuilder">You can configure retry policies here.</param>
         /// <returns></returns>
         public static IRecaptchaBuilder AddRecaptchaHttpClient<T>(this IRecaptchaBuilder builder,
             string name = null, Action<HttpClient> configureClient = null, Action<IHttpClientBuilder> configureHttpBuilder = null)
