@@ -1,12 +1,9 @@
-﻿using System;
-
-namespace Spaier.Recaptcha
+﻿namespace Spaier.Recaptcha
 {
-    [Obsolete]
     public enum RecaptchaSecretType
     {
-        V2,
-        V2Android,
-        V3
+        V2 = 0,
+        V2Android = 1,
+        V3 = 2
     }
 }

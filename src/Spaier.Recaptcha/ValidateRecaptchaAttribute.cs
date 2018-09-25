@@ -135,7 +135,7 @@ namespace Spaier.Recaptcha
                     }
                 }
 
-                if (Configurations is null)
+                if (Configurations is null || Configurations.Length == 0)
                 {
                     if (key is null)
                     {
@@ -199,7 +199,9 @@ namespace Spaier.Recaptcha
                             customErrors.Add(ErrorCodes.LowScoreError);
                         }
 
-                        if (!(AllowedAction is null) && AllowedAction != response.Action)
+                        if (!(AllowedAction is null)
+                            && AllowedAction != response.Action
+                            && configuration.SecretType != RecaptchaSecretType.V2Android)
                         {
                             customErrors.Add(ErrorCodes.UnallowedActionError);
                         }
