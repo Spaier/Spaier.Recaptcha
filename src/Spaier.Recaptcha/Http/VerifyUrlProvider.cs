@@ -2,11 +2,11 @@
 
 namespace Spaier.Recaptcha.Http
 {
-    public class CustomVerifyUrlProvider : IVerifyUrlProvider
+    internal class VerifyUrlProvider : IVerifyUrlProvider
     {
         public string Url { get; private set; }
 
-        public CustomVerifyUrlProvider(string url)
+        public VerifyUrlProvider(string url)
         {
             if (string.IsNullOrWhiteSpace(url))
             {

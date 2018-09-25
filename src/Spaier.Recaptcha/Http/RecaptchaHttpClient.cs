@@ -6,7 +6,7 @@ using Spaier.Recaptcha.Responses;
 
 namespace Spaier.Recaptcha.Http
 {
-    public class RecaptchaHttpClient : IRecaptchaHttpClient
+    internal sealed class RecaptchaHttpClient : IRecaptchaHttpClient
     {
         private const string SecretKey = "secret";
         private const string ResponseKey = "response";
