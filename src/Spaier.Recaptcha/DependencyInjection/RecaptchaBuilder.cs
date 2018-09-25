@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Spaier.Recaptcha.DependencyInjection
 {
-    internal class RecaptchaBuilder : IRecaptchaBuilder
+    internal sealed class RecaptchaBuilder : IRecaptchaBuilder
     {
         public IServiceCollection Services { get; }
 

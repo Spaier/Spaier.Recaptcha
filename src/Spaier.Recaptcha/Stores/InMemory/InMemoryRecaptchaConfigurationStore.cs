@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Spaier.Recaptcha.Stores.InMemory
 {
-    public class InMemoryRecaptchaConfigurationStore : IRecaptchaConfigurationStore
+    internal sealed class InMemoryRecaptchaConfigurationStore : IRecaptchaConfigurationStore
     {
         private readonly IDictionary<string, RecaptchaConfiguration> configurations;
 

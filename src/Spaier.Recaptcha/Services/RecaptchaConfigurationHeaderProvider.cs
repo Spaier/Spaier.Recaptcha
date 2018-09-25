@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace Spaier.Recaptcha.Services
 {
-    public class RecaptchaConfigurationHeaderProvider : IRecaptchaConfigurationProvider
+    public sealed class RecaptchaConfigurationHeaderProvider : IRecaptchaConfigurationProvider
     {
         private readonly string recaptchaConfigurationHeaderKey;
 
@@ -18,7 +18,7 @@ namespace Spaier.Recaptcha.Services
             return request?.Headers[recaptchaConfigurationHeaderKey];
         }
 
-        public class Options
+        public sealed class Options
         {
             public string HeaderKey { get; set; } = RecaptchaDefaults.DefaultConfigurationHeaderKey;
         }
