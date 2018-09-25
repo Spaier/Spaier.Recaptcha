@@ -1,5 +1,7 @@
 # Contributing
 
+Based on https://www.conventionalcommits.org
+
 ## Commit message structure
 
 type and subject is mandatory.
