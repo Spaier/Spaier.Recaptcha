@@ -26,9 +26,9 @@ namespace WebApiSample
                 //.AddInMemoryConfigurationStore(Configuration.GetSection("Recaptcha"))
                 .AddInMemoryConfigurationStore(new Dictionary<string, RecaptchaConfiguration>
                 {
-                    ["Sitekey1"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey),
-                    ["Sitekey2"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey),
-                    ["Sitekey3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey)
+                    ["Sitekey1"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2),
+                    ["Sitekey2"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2Android),
+                    ["Sitekey3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V3),
                 })
                 .AddTokenHeaderProvider()
                 .AddConfigurationHeaderProvider()

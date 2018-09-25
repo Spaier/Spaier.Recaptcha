@@ -11,35 +11,50 @@ namespace WebApiSample.Controllers
     [ApiController]
     public class SampleController : ControllerBase
     {
+        /// <summary>
+        /// Configuration can be omitted.
+        /// background action is allowed.
+        /// Sitekey1 is allowed.
+        /// Errors aren't added to ModelState.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="recaptchaResponse"></param>
+        /// <returns></returns>
         [ValidateRecaptcha(
             Configurations = new[] { "Sitekey1" },
             AllowedAction = "background",
-            MinimumScore = 0.3,
-            UseModelErrors = false)]
+            MinimumScore = 0.3)]
         [HttpPost]
-        public Task<ActionResult<RecaptchaResponse>> DataApi(SampleData data, [FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
+        public Task<ActionResult<RecaptchaResponse>> SampleApi(SampleData data, [FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
         {
             Console.WriteLine(recaptchaResponse);
             return Task.FromResult(new ActionResult<RecaptchaResponse>(recaptchaResponse));
         }
 
         [ValidateRecaptcha(
-            Configurations = new[] { "Sitekey1" },
-            AllowedAction = "background",
-            MinimumScore = 0.2)]
+            UseModelErrors = false)]
         [HttpPost]
-        public ActionResult EmptyApi([FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
+        public ActionResult NoConfigApi([FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
         {
-            return NoContent();
+            return Ok(recaptchaResponse);
+        }
+
+        [ValidateRecaptcha(
+            Configurations = new[] { "Sitekey1" },
+            UseModelErrors = false)]
+        [HttpPost]
+        public ActionResult OneConfigApi([FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
+        {
+            return Ok(recaptchaResponse);
         }
 
         [ValidateRecaptcha(
             Configurations = new[] { "Sitekey1", "Sitekey2" },
-            AllowedAction = "background")]
+            UseModelErrors = false)]
         [HttpPost]
         public ActionResult MultiConfigApi([FromRecaptchaResponse] RecaptchaResponse recaptchaResponse)
         {
-            return NoContent();
+            return Ok(recaptchaResponse);
         }
     }
 
