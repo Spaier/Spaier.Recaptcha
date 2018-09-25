@@ -41,13 +41,22 @@ public void ConfigureServices(IServiceCollection services) {
         //.AddInMemoryConfigurationStore(Configuration.GetSection("Recaptcha"))
         .AddInMemoryConfigurationStore(new Dictionary<string, RecaptchaConfiguration>
         {
-            ["Sitekey1"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey),
-            ["Sitekey2"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey),
-            ["Sitekey3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey)
+            ["Sitekey1"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2),
+            ["Sitekey2"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V2Android),
+            ["Sitekey3"] = new RecaptchaConfiguration(RecaptchaDefaults.TestSecretKey, RecaptchaSecretType.V3),
         })
         .AddTokenHeaderProvider()
         .AddConfigurationHeaderProvider()
-        .AddRecaptchaHttpClient()
+        .AddRecaptchaHttpClient(configureHttpBuilder: httpBuilder =>
+        {
+		    // You can setup Polly here
+            httpBuilder.AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[]
+            {
+                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(5),
+                TimeSpan.FromSeconds(10)
+            }));
+        })
         .UseGoogleUrl();
 		// UseGlobalUrl(); // will use recaptcha.net mirror. Useful for countries where google.com is blocked.
         // UseCustomUrl("your_url"); // will use custom url for validation.
